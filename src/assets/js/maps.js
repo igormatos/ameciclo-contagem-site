@@ -1,44 +1,89 @@
- /* OSM & OL example code provided by https://mediarealm.com.au/ */
-var map;
-var mapLat = -8.0451315;
-var mapLng = -34.9020563;
-var mapDefaultZoom = 12;
-
-function initialize_map() {
-    map = new ol.Map({
-        target: "map",
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM({
-                    url: "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                })
-            })
-        ],
-        view: new ol.View({
-            center: ol.proj.fromLonLat([mapLng, mapLat]),
-            zoom: mapDefaultZoom
-        })
-    });
+function groupBy(xs, f) {
+    return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
 }
 
-function add_map_point(lat, lng) {
-    var vectorLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: [new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(lng),
-                    parseFloat(lat)
-                ], 'EPSG:4326', 'EPSG:3857')),
-            })]
-        }),
-        style: new ol.style.Style({
-            image: new ol.style.Icon({
-                anchor: [0.5, 0.5],
-                anchorXUnits: "fraction",
-                anchorYUnits: "fraction",
-                src: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg"
-            })
-        })
+window.onload = function () {
+    mapboxgl.accessToken = 'pk.eyJ1IjoicGxhdGFmb3JtYWFtZWNpY2xvIiwiYSI6ImNrZmhncmt0bjA1MXIydnBtY2YwaGlkaTUifQ.bR5YMTLBM-upxAzXYChYeQ';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v10',
+        zoom: 11,
+        center: [-34.945277, -8.0584364]
     });
 
-    map.addLayer(vectorLayer);
+    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new mapboxgl.FullscreenControl());
+
+
+    getDataCouting().then(allCounts => {
+        var featureCollection = {
+            'type': 'geojson',
+            'data': {
+                'type': 'FeatureCollection',
+                'features': []
+            }
+        }
+
+        var countsGroupedByLocation = groupBy(allCounts, (count) => count.name)
+
+        Object.entries(countsGroupedByLocation).forEach(element => {
+            var locationName = element[0]
+            var locationCountsList = element[1]
+            var feature = {
+                "type": "Feature",
+                "properties": {
+                    "icon": "bicycle"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": element[1][0].location.coordinates.reverse()
+                }
+            }
+
+            feature.properties.description = `<strong>${locationName}</strong> <br> <ul>`
+            locationCountsList.forEach(specificCount => {
+                feature.properties.description += `<li><a href="#">Total: ${specificCount.summary.total} (${specificCount.date.split('T')[0]})</a></li>`
+            });
+
+            feature.properties.description += "</ul>"
+
+            featureCollection.data.features.push(feature)
+        });
+
+        map.addSource('places', featureCollection)
+
+
+        map.addLayer({
+            'id': 'places',
+            'type': 'symbol',
+            'source': 'places',
+            'layout': {
+                'icon-image': '{icon}-15',
+                'icon-allow-overlap': true
+            }
+        });
+
+        map.on('click', 'places', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.description;
+
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map);
+        });
+
+        map.on('mouseenter', 'places', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'places', function () {
+            map.getCanvas().style.cursor = '';
+        });
+
+    });
 }
