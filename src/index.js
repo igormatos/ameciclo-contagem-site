@@ -3,6 +3,7 @@ require('normalize.css/normalize.css');
 import './styles/index.scss';
 require("./assets/js/maps.js")
 import BikeAnjoLogo from './assets/images/bike-anjo-logo.png'
+import AmecicloLogo from './assets/images/ameciclo-logo.png'
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -35,10 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const bikeAnjoLogo = new Image();
+    bikeAnjoLogo.width = 150;
+    bikeAnjoLogo.height = 150;
     bikeAnjoLogo.src = BikeAnjoLogo;
  
     document.getElementById("logo-bikeanjo").appendChild(bikeAnjoLogo);
 
+    const amecicloLogo = new Image();
+    amecicloLogo.width = 150;
+    amecicloLogo.height = 150;
+    amecicloLogo.src = AmecicloLogo;
+ 
+    document.getElementById("logo-ameciclo").appendChild(amecicloLogo);
     
 
 });

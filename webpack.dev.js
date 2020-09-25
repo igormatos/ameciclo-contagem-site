@@ -70,13 +70,14 @@ module.exports = {
                 use: [{
                     loader: 'file-loader',
                 }]
-            },
-            {
-                test: /\.(png|svg|jpg|gif)$/,
-                use: [
-                    'file-loader',
-                ]
             }
+            // ,
+            // {
+            //     test: /\.(png|jpg|gif)$/,
+            //     use: [
+            //         'file-loader',
+            //     ]
+            // }
 
         ],
     },
