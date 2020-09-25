@@ -4,20 +4,20 @@ require('./styles/index.scss');
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /*   const pluginsTriggerElement = document.getElementById('plugins-trigger');
-    const pluginsElement = document.getElementById('plugins');
-
-    const pluginsVisibleClass = "splash-overview-plugins__list--visible";
-
-    pluginsTriggerElement.onclick = () => {
-        pluginsElement.classList.toggle(pluginsVisibleClass);
-    } */
+    /*   const pluginsTriggerElement = document.getElementById('plugins-trigger');
+      const pluginsElement = document.getElementById('plugins');
+  
+      const pluginsVisibleClass = "splash-overview-plugins__list--visible";
+  
+      pluginsTriggerElement.onclick = () => {
+          pluginsElement.classList.toggle(pluginsVisibleClass);
+      } */
 
     const menu = document.querySelector('.menu');
     const menu_container = document.querySelector('.menu-fullscreen');
     const body = document.querySelector('body');
-    
-    menu.addEventListener('click', function() {
+
+    menu.addEventListener('click', function () {
         if (menu.classList.contains('open')) {
             menu.classList.remove('open');
             menu.classList.add('close');
@@ -30,66 +30,90 @@ document.addEventListener("DOMContentLoaded", () => {
             body.classList.add('overflow-y-disabled');
         }
     });
-
-    /* var mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
-
-    mapboxgl.accessToken =
-        'pk.eyJ1IjoicGF0b21hcnF1ZXMiLCJhIjoiY2tldnliYjh5MGZkaDJybnh1OWJpODYzbSJ9.njmQ_Vp0NEtJb004VkIouw'; */
-   /*  var map = new mapboxgl.Map({
-        container: 'map-ciclists-count',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-122.486052, 37.830348],
-        zoom: 15
+    
+    function groupBy(xs, f) {
+        return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
+    }
+   
+    mapboxgl.accessToken = 'pk.eyJ1IjoicGxhdGFmb3JtYWFtZWNpY2xvIiwiYSI6ImNrZmhncmt0bjA1MXIydnBtY2YwaGlkaTUifQ.bR5YMTLBM-upxAzXYChYeQ';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v10',
+        zoom: 11,
+        center: [-34.945277, -8.0584364]
     });
 
-
-    map.on('load', function () {
-        map.addSource('route', {
+    map.addControl(new mapboxgl.NavigationControl());
+    getDataCouting().then(allCounts => {
+        var featureCollection = {
             'type': 'geojson',
             'data': {
-                'type': 'Feature',
-                'properties': {},
-                'geometry': {
-                    'type': 'LineString',
-                    'coordinates': [
-                        [-122.48369693756104, 37.83381888486939],
-                        [-122.48348236083984, 37.83317489144141],
-                        [-122.48339653015138, 37.83270036637107],
-                        [-122.48356819152832, 37.832056363179625],
-                        [-122.48404026031496, 37.83114119107971],
-                        [-122.48404026031496, 37.83049717427869],
-                        [-122.48348236083984, 37.829920943955045],
-                        [-122.48356819152832, 37.82954808664175],
-                        [-122.48507022857666, 37.82944639795659],
-                        [-122.48610019683838, 37.82880236636284],
-                        [-122.48695850372314, 37.82931081282506],
-                        [-122.48700141906738, 37.83080223556934],
-                        [-122.48751640319824, 37.83168351665737],
-                        [-122.48803138732912, 37.832158048267786],
-                        [-122.48888969421387, 37.83297152392784],
-                        [-122.48987674713133, 37.83263257682617],
-                        [-122.49043464660643, 37.832937629287755],
-                        [-122.49125003814696, 37.832429207817725],
-                        [-122.49163627624512, 37.832564787218985],
-                        [-122.49223709106445, 37.83337825839438],
-                        [-122.49378204345702, 37.83368330777276]
-                    ]
+                'type': 'FeatureCollection',
+                'features': []
+            }
+        }
+        
+        var countsGroupedByLocation = groupBy(allCounts, (count) => count.name)
+        
+        Object.entries(countsGroupedByLocation).forEach(element => {
+            var locationName = element[0]
+            var locationCountsList = element[1]
+            var feature = {
+                "type": "Feature",
+                "properties": {
+                    "icon": "bicycle"
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": element[1][0].location.coordinates.reverse()
                 }
             }
+            
+            feature.properties.description = `<strong>${locationName}</strong> <br> <ul>`
+            locationCountsList.forEach(specificCount => {
+                feature.properties.description += `<li><a href="#">Total: ${specificCount.summary.total} (${specificCount.date.split('T')[0]})</a></li>`
+            });
+
+            feature.properties.description += "</ul>"
+
+            featureCollection.data.features.push(feature)
         });
+
+        map.addSource('places', featureCollection)
+        
+        
         map.addLayer({
-            'id': 'route',
-            'type': 'line',
-            'source': 'route',
+            'id': 'places',
+            'type': 'symbol',
+            'source': 'places',
             'layout': {
-                'line-join': 'round',
-                'line-cap': 'round'
-            },
-            'paint': {
-                'line-color': '#888',
-                'line-width': 8
+                'icon-image': '{icon}-15',
+                'icon-allow-overlap': true
             }
         });
-    }); */
+
+        map.on('click', 'places', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.description;
+
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            new mapboxgl.Popup()
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map);
+        });
+
+        map.on('mouseenter', 'places', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'places', function () {
+            map.getCanvas().style.cursor = '';
+        });
+
+    });
 
 });
