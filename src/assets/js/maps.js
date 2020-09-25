@@ -34,11 +34,13 @@ function addCountsOnTable(counts) {
          item.appendChild(totalCountTd)           
 
          //download data column
-         var downloadNode = document.createTextNode("CSV / JSON")
+         var aNode = document.createElement("a")
+         aNode.href= "https://api.plataforma.ameciclo.org/contagens/v1/cyclist-count/" + count._id
+         aNode.innerHTML = "JSON"
          var downloadTd = document.createElement("td")
 
          downloadTd.classList.add("text-right")
-         downloadTd.appendChild(downloadNode) 
+         downloadTd.appendChild(aNode) 
          item.appendChild(downloadTd)           
 
         tableBody.appendChild(item)
@@ -92,9 +94,9 @@ window.onload = function () {
 
             feature.properties.description = `<strong>${locationName}</strong> <br> <ul>`
             locationCountsList.forEach(specificCount => {
-                feature.properties.description += `<li><a href="#">Total: ${specificCount.summary.total} (${specificCount.date.split('T')[0]})</a></li>`
+                feature.properties.description += `<li>Total: ${specificCount.summary.total} (${specificCount.date.split('T')[0]})</li>`
             });
-            feature.properties.description += "</ul>"
+            feature.properties.description += "</ul></br> <p>Mais informações em breve."
 
             featureCollection.data.features.push(feature)
         });
