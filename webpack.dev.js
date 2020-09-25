@@ -15,7 +15,8 @@ module.exports = {
         fs: 'empty'
     },
     module: {
-        rules: [{
+        rules: [
+            {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
@@ -26,28 +27,28 @@ module.exports = {
             {
                 test: /\.(scss|css)$/,
                 use: [{
-                        // creates style nodes from JS strings
-                        loader: "style-loader",
-                        options: {
-                            sourceMap: true
-                        }
-                    },
-                    {
-                        // translates CSS into CommonJS
-                        loader: "css-loader",
-                        options: {
-                            sourceMap: true
-                        }
-                    },
-                    {
-                        // compiles Sass to CSS
-                        loader: "sass-loader",
-                        options: {
-                            outputStyle: 'expanded',
-                            sourceMap: true,
-                            sourceMapContents: true
-                        }
+                    // creates style nodes from JS strings
+                    loader: "style-loader",
+                    options: {
+                        sourceMap: true
                     }
+                },
+                {
+                    // translates CSS into CommonJS
+                    loader: "css-loader",
+                    options: {
+                        sourceMap: true
+                    }
+                },
+                {
+                    // compiles Sass to CSS
+                    loader: "sass-loader",
+                    options: {
+                        outputStyle: 'expanded',
+                        sourceMap: true,
+                        sourceMapContents: true
+                    }
+                }
                     // Please note we are not running postcss here
                 ]
             },
@@ -69,7 +70,14 @@ module.exports = {
                 use: [{
                     loader: 'file-loader',
                 }]
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ]
             }
+
         ],
     },
     plugins: [

@@ -5,104 +5,41 @@
     <meta charset="utf-8" />
     <title>Contagem de Ciclistas</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Condensed&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
-
-    <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
+    
     <script>
-        /* OSM & OL example code provided by https://mediarealm.com.au/ */
-        var map;
-        var mapLat = -8.0451315;
-        var mapLng = -34.9020563;
-        var mapDefaultZoom = 12;
+        function getCountsSummary() {
+            var urlCouting = "https://api.plataforma.ameciclo.org/contagens/v1/";
 
-        var dataCounting;
-
-        // var counting = {
-        //     1: {
-        //         'title': 'Ponto 1',
-        //         'mapLat': '',
-        //         'mapLng': ''
-        //     },
-        //     2: {
-        //         'title': 'Ponto 1',
-        //         'mapLat': '',
-        //         'mapLng': ''
-        //     },
-        //     3: {
-        //         'title': 'Ponto 1',
-        //         'mapLat': '',
-        //         'mapLng': ''
-        //     }
-        // };
+            return fetch(urlCouting)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    return data;
+                })
+                .catch(error => console.error(error));
+        }
+        
 
         function getDataCouting() {
             var urlCouting = "https://api.plataforma.ameciclo.org/contagens/v1/cyclist-count";
 
-            fetch(urlCouting)
+            return fetch(urlCouting)
                 .then(response => response.json())
-                .then(data => {   
-                    console.log(data);                
+                .then(data => {
+                    console.log(data);
                     return data;
                 })
-                .catch(error => console.error(error));              
+                .catch(error => console.error(error));
         }
-
-        function initialize_map() {
-            map = new ol.Map({
-                target: "map",
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM({
-                            url: "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        })
-                    })
-                ],
-                view: new ol.View({
-                    center: ol.proj.fromLonLat([mapLng, mapLat]),
-                    zoom: mapDefaultZoom
-                })
-            });
-        }
-
-        function add_map_point(lat, lng) {
-            var vectorLayer = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.Point(ol.proj.transform([parseFloat(lng),
-                            parseFloat(lat)
-                        ], 'EPSG:4326', 'EPSG:3857')),
-                    })]
-                }),
-                style: new ol.style.Style({
-                    image: new ol.style.Icon({
-                        anchor: [0.5, 0.5],
-                        anchorXUnits: "fraction",
-                        anchorYUnits: "fraction",
-                        src: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg"
-                        //src: "../assets/images/icons/bike-marker.svg"
-                    })
-                })
-            });
-
-            map.addLayer(vectorLayer);
-        }
-
-        var counting = getDataCouting();
-        console.log(typeof counting, counting);
-
-        window.onload = function () {
-            initialize_map();
-            
-            // data.forEach(function(counting){
-            //     console.log('counting ->' , counting);
-            // });
-            add_map_point(mapLat, mapLng);
-        }
-
     </script>
+
+    
+    
 
 </head>
 
@@ -115,16 +52,16 @@
                         <!-- <img src="src/assets/ameciclo-logo.png" alt="Ameciclo Logo"> -->
                     </div>
                 </div>
-                <div class="col-6 col-md-4 text-right">
-                    <button class="menu" aria-label="Mobile Menu">
+                <!-- <div class="col-6 col-md-4 text-right">
+                    <button class="menu menu-button" aria-label="Mobile Menu">
                         <span></span>
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
     </header>
 
-    <div class="menu-fullscreen hidden">
+    <!-- <div class="menu-fullscreen hidden">
         <ul class="menu-full">
             <li class="menu-item">
                 <a href="/" class="menu-link">Agenda</a>
@@ -142,7 +79,7 @@
                 <a href="/" class="menu-link">Contato</a>
             </li>
         </ul>
-    </div>
+    </div> -->
 
     <section id="section-banner" class="banner-home">
         <div class="container">
@@ -162,28 +99,28 @@
                         <div class="icon icon-bikers"></div>
                         <span class="label-info">Total de <br>Ciclistas</span>
                         <!-- <span class="count-high">33.90%</span> -->
-                        <div class="count">77.640</div>
+                        <div id="total-amount" class="count"></div>
                     </div>
                 </div>
                 <div class="col col-sm-6 col-md-3">
                     <div class="box-counter">
                         <div class="icon icon-counters"></div>
                         <span class="label-info">Contagens <br>Realizadas</span>
-                        <div class="count">39</div>
+                        <div id="counts-number" class="count"></div>
                     </div>
                 </div>
                 <div class="col col-sm-6 col-md-3">
                     <div class="box-counter">
                         <div class="icon icon-points"></div>
                         <span class="label-info">Pontos <br>Monitorados</span>
-                        <div class="count">25</div>
+                        <div id="locations-count" class="count"></div>
                     </div>
                 </div>
                 <div class="col col-sm-6 col-md-3">
                     <div class="box-counter">
                         <div class="icon icon-maximum"></div>
                         <span class="label-info">Máximo em <br>um ponto</span>
-                        <div class="count">4305</div>
+                        <div id="maximum-value" class="count"></div>
                     </div>
                 </div>
             </div>
@@ -199,33 +136,15 @@
                 </div>
                 <div class="row">
                     <div class="col offset-md-2 col-md-8">
-                            <h4 class="content-information">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus
-                                    odit nobis rem dolor, ea ratione, inventore dolorem ex ad vitae cumque est tempora veritatis
-                                    debitis nostrum odio laudantium illo voluptatem.</h4>
+                        <!-- <h4 class="content-information"></h4> -->
+                        <p>Registramos as pessoas que passam de bicicleta durante 14 horas em um pré-escolhido cruzamento da cidade do Recife. As nossas contagens são registradas manualmente através da observação das pessoas voluntárias na contagem, registrando a direção do deslocamento e fatores qualitativos. Dentre esses fatores estão o gênero, tipo de bicicleta, uso de capacete, se estão dando carona, se são crianças se estão à serviço e comportamentos como contramão e pedalada na calçada. Ainda são registrados outros fatores qualitativos que podem ser especificidades de cada local. </p>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="section-datasearch" class="container-search">
-            <div class="container">
-                <div class="row text-center pb-3">
-                    <div class="col">
-                        <h3 class="title-section">Faça uma pesquisa geral na nossa base de dados</h3>
+                    <div class="col offset-md-2 col-md-8">
+                        <p>
+                            As contagens de ciclistas são importantes instrumentos de planejamento urbano. Elas permitem identificar os pontos de maior demanda por estruturas cicláveis, além das tendências futuras. A Ameciclo as utiliza como ferramentas para incidir no planejamento e tem seus dados abertos para serem usados pela mídia, academia ou quaisquer pessoa que assim deseje.</p>
                     </div>
+                    
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="content-search">
-                            <input type="text" class="input-search" placeholder="Digite aqui a sua busca...">
-                            <!-- <button class="btn btn-search">
-                                <i class="fa fa-search" aria-hidden="true"></i>
-                            </button> -->
-                        </div>
-
-                    </div>
-                </div>
-
             </div>
         </section>
 
@@ -298,7 +217,7 @@
             </div>
         </section>
 
-        <section id="section-extras-info" class="mb-5 mt-5">
+        <!-- <section id="section-extras-info" class="mb-5 mt-5">
             <div class="container text-center">
                 <div class="row">
                     <div class="col">
@@ -308,7 +227,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <section id="section-counter-data-list mt-5">
             <div id="map" class="map-content"></div>
@@ -317,7 +236,7 @@
                 <div class="row">
                     <div class="col-12 text-center pt-5 pb-3">
                         <h3 class="title-section">Veja nossas contagens</h3>
-                        <!-- <h4 class="subtitle-section">filtre por categoria</h4> -->
+                        <p>Em breve será possível visualizar mais informações</p>
                     </div>
                 </div>
                 <div class="row">
@@ -332,33 +251,8 @@
                                     <th class="text-center">#</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center" scope="row">25/03/2013</td>
-                                    <td class="text-left">Av. Rui Barbosa x R. Amélia</td>
-                                    <td class="text-center">1431</td>
-                                    <td class="text-right" class="text-right">
-                                        JSON / CSV
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="" class="see-details" title="Ver Mais" alt="Ver Mais">
-                                            <i class="fa fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center" scope="row">25/03/2013</td>
-                                    <td class="text-left">Av. Rui Barbosa x R. Amélia</td>
-                                    <td class="text-center">1431</td>
-                                    <td class="text-right" class="text-right">
-                                        JSON / CSV
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="" class="see-details" title="Ver Mais" alt="Ver Mais">
-                                            <i class="fa fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                            <tbody id="table-body">
+                                
                             </tbody>
                         </table>
                     </div>
@@ -366,6 +260,7 @@
             </div>
         </section>
 
+<!--         
         <section id="section-data-news" class="container-full mt-5 hidden">
             <div class="container">
                 <div class="row">
@@ -392,27 +287,23 @@
                 </div>
             </div>
 
-        </section>
+        </section> -->
 
         <section id="section-partners" class="mt-5 mb-5">
             <div class="container">
                 <div class="row  pt-5 pb-5">
                     <div class="col-12 text-center">
-                        <h3 class="title-section pb-4">Realização</h3>
+                        <h3 class="title-section pb-4">Realização | Apoio | Patrocínio</h3>
                     </div>
                     <div class="col">
                         <ul class="list-partners list-inline text-center">
-                            <li class="list-partern-item list-inline-item">
-                                <img src="https://via.placeholder.com/150" alt="">
+                            <li id="logo-bikeanjo" class="list-partern-item list-inline-item">
+                                
                             </li>
-                            <li class="list-partern-item list-inline-item">
-                                <img src="https://via.placeholder.com/150" alt="">
+                            <li id="logo-itau" class="list-partern-item list-inline-item">
+                                
                             </li>
-                            <li class="list-partern-item list-inline-item">
-                                <img src="https://via.placeholder.com/150" alt="">
-                            </li>
-                            <li class="list-partern-item list-inline-item">
-                                <img src="https://via.placeholder.com/150" alt="">
+                            <li id="logo-oak" class="list-partern-item list-inline-item">
                             </li>
                         </ul>
                     </div>
@@ -432,21 +323,15 @@
                                 </a>
                             </li>
                             <li class="item-icons list-inline-item">
-                                <a href="https://www.facebook.com/ameciclo" target="_blank" rel="noreferrer noopener"
+                                <a href="https://www.instagram.com/ameciclo/" target="_blank" rel="noreferrer noopener"
                                     class="icon-link">
                                     <i class="fa fa-instagram" aria-hidden="true"></i>
                                 </a>
                             </li>
                             <li class="item-icons list-inline-item">
-                                <a href="https://www.facebook.com/ameciclo" target="_blank" rel="noreferrer noopener"
+                                <a href="https://twitter.com/ameciclo" target="_blank" rel="noreferrer noopener"
                                     class="icon-link">
                                     <i class="fa fa-twitter-square" aria-hidden="true"></i>
-                                </a>
-                            </li>
-                            <li class="item-icons list-inline-item">
-                                <a href="https://www.facebook.com/ameciclo" target="_blank" rel="noreferrer noopener"
-                                    class="icon-link">
-                                    <i class="fa fa-telegram" aria-hidden="true"></i>
                                 </a>
                             </li>
                         </ul>
@@ -455,9 +340,9 @@
                 <div class="row">
                     <div class="col">
                         <p class="footer-info">
-                            <div class="company">Ameciclo - Associação Metropolitana de Ciclistas do Recife</div>
-                            <div class="address">R. da Aurora, 529, loja 2 - Santo Amaro Recife/PE, 50050-145</div>
-                            <a href="mailto:contato@ameciclo.org" class="footer-mail">contato@ameciclo.org</a>
+                        <div class="company">Ameciclo - Associação Metropolitana de Ciclistas do Recife</div>
+                        <div class="address">R. da Aurora, 529, loja 2 - Santo Amaro Recife/PE, 50050-145</div>
+                        <a href="mailto:contato@ameciclo.org" class="footer-mail">contato@ameciclo.org</a>
                         </p>
                     </div>
                 </div>
@@ -466,10 +351,7 @@
                 Ameciclo 2020
             </div>
         </footer>
-        <!-- 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 </body>
 
 </html>

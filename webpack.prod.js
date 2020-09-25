@@ -82,6 +82,12 @@ module.exports = {
                         loader: 'file-loader',
                     }
                 ]
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ]
             }
         ]
     },
