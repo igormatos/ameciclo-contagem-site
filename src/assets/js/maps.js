@@ -44,15 +44,6 @@ function addCountsOnTable(counts) {
         tableBody.appendChild(item)
     })
     console.log(document.getElementsByClassName("tbody"))
-    
-    // <tr>
-    //                                 <td class="text-center" scope="row">25/03/2013</td>
-    //                                 <td class="text-left">Av. Rui Barbosa x R. Amélia</td>
-    //                                 <td class="text-center">1431</td>
-    //                                 <td class="text-right" class="text-right">
-    //                                     JSON / CSV
-    //                                 </td>
-    //                             </tr>
 }
 
 window.onload = function () {
