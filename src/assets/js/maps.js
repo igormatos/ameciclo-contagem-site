@@ -143,6 +143,9 @@ window.onload = function () {
             map.getCanvas().style.cursor = '';
         });
 
+        map.scrollZoom.disable();
+
+
     });
 
     getCountsSummary().then(globalSummary => {
