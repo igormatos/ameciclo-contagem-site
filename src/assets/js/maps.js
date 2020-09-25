@@ -2,6 +2,59 @@ function groupBy(xs, f) {
     return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
 }
 
+function addCountsOnTable(counts) {
+    var tableBody = document.getElementById("table-body")
+    
+    counts.forEach(count => {
+        var item = document.createElement("tr")
+
+        //date column
+        var dateNode = document.createTextNode(count.date.split("T")[0])
+        var dateTd = document.createElement("td")
+
+        dateTd.setAttribute("scope", "row")
+        dateTd.classList.add("text-center")
+        dateTd.appendChild(dateNode)
+        item.appendChild(dateTd)        
+
+         //place column
+         var placeNode = document.createTextNode(count.name)
+         var placeTd = document.createElement("td")
+
+         placeTd.classList.add("text-left")
+         placeTd.appendChild(placeNode)
+         item.appendChild(placeTd)           
+
+         //totalCount column
+         var totalCountNode = document.createTextNode(count.summary.total)
+         var totalCountTd = document.createElement("td")
+
+         totalCountTd.classList.add("text-center")
+         totalCountTd.appendChild(totalCountNode)   
+         item.appendChild(totalCountTd)           
+
+         //download data column
+         var downloadNode = document.createTextNode("CSV / JSON")
+         var downloadTd = document.createElement("td")
+
+         downloadTd.classList.add("text-right")
+         downloadTd.appendChild(downloadNode) 
+         item.appendChild(downloadTd)           
+
+        tableBody.appendChild(item)
+    })
+    console.log(document.getElementsByClassName("tbody"))
+    
+    // <tr>
+    //                                 <td class="text-center" scope="row">25/03/2013</td>
+    //                                 <td class="text-left">Av. Rui Barbosa x R. Amélia</td>
+    //                                 <td class="text-center">1431</td>
+    //                                 <td class="text-right" class="text-right">
+    //                                     JSON / CSV
+    //                                 </td>
+    //                             </tr>
+}
+
 window.onload = function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoicGxhdGFmb3JtYWFtZWNpY2xvIiwiYSI6ImNrZmhncmt0bjA1MXIydnBtY2YwaGlkaTUifQ.bR5YMTLBM-upxAzXYChYeQ';
     var map = new mapboxgl.Map({
@@ -24,9 +77,15 @@ window.onload = function () {
             }
         }
 
-        var countsGroupedByLocation = groupBy(allCounts, (count) => count.name)
+        addCountsOnTable(allCounts)
 
-        Object.entries(countsGroupedByLocation).forEach(element => {
+        var countsGroupedByLocation = groupBy(allCounts, (count) => count.name)
+        var countsGroupedArray = Object.entries(countsGroupedByLocation)
+
+        var locationsCountNode = document.createTextNode(countsGroupedArray.length)
+        document.getElementById("locations-count").appendChild(locationsCountNode)
+
+        countsGroupedArray.forEach(element => {
             var locationName = element[0]
             var locationCountsList = element[1]
             var feature = {
@@ -44,7 +103,6 @@ window.onload = function () {
             locationCountsList.forEach(specificCount => {
                 feature.properties.description += `<li><a href="#">Total: ${specificCount.summary.total} (${specificCount.date.split('T')[0]})</a></li>`
             });
-
             feature.properties.description += "</ul>"
 
             featureCollection.data.features.push(feature)
@@ -86,4 +144,17 @@ window.onload = function () {
         });
 
     });
+
+    getCountsSummary().then(globalSummary => {
+        var totalAmountNode = document.createTextNode(globalSummary[0].totalAmount)
+        document.getElementById("total-amount").appendChild(totalAmountNode)
+
+        var numberOfCountsNode = document.createTextNode(globalSummary[0].numberOfCounts)
+        document.getElementById("counts-number").appendChild(numberOfCountsNode)
+
+        var maximumValueNode = document.createTextNode(globalSummary[0].MaximumValue)
+        document.getElementById("maximum-value").appendChild(maximumValueNode)
+    
+    })
+
 }

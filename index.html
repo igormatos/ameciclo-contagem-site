@@ -10,6 +10,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     
     <script>
+        function getCountsSummary() {
+            var urlCouting = "https://api.plataforma.ameciclo.org/contagens/v1/";
+
+            return fetch(urlCouting)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    return data;
+                })
+                .catch(error => console.error(error));
+        }
+        
 
         function getDataCouting() {
             var urlCouting = "https://api.plataforma.ameciclo.org/contagens/v1/cyclist-count";
@@ -86,28 +98,28 @@
                         <div class="icon icon-bikers"></div>
                         <span class="label-info">Total de <br>Ciclistas</span>
                         <!-- <span class="count-high">33.90%</span> -->
-                        <div class="count">77.640</div>
+                        <div id="total-amount" class="count"></div>
                     </div>
                 </div>
                 <div class="col col-sm-6 col-md-3">
                     <div class="box-counter">
                         <div class="icon icon-counters"></div>
                         <span class="label-info">Contagens <br>Realizadas</span>
-                        <div class="count">39</div>
+                        <div id="counts-number" class="count"></div>
                     </div>
                 </div>
                 <div class="col col-sm-6 col-md-3">
                     <div class="box-counter">
                         <div class="icon icon-points"></div>
                         <span class="label-info">Pontos <br>Monitorados</span>
-                        <div class="count">25</div>
+                        <div id="locations-count" class="count"></div>
                     </div>
                 </div>
                 <div class="col col-sm-6 col-md-3">
                     <div class="box-counter">
                         <div class="icon icon-maximum"></div>
                         <span class="label-info">Máximo em <br>um ponto</span>
-                        <div class="count">4305</div>
+                        <div id="maximum-value" class="count"></div>
                     </div>
                 </div>
             </div>
@@ -123,33 +135,9 @@
                 </div>
                 <div class="row">
                     <div class="col offset-md-2 col-md-8">
-                        <h4 class="content-information">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus
-                            odit nobis rem dolor, ea ratione, inventore dolorem ex ad vitae cumque est tempora veritatis
-                            debitis nostrum odio laudantium illo voluptatem.</h4>
+                        <h4 class="content-information">Contar para aprender. Aprender para difundir. Difundir para pressionar. Conhecer os aspectos de quem pedala, os pontos que tem mais ciclistas e várias outras informações que só um dia de contagem propicia</h4>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <section id="section-datasearch" class="container-search">
-            <div class="container">
-                <div class="row text-center pb-3">
-                    <div class="col">
-                        <h3 class="title-section">Faça uma pesquisa geral na nossa base de dados</h3>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="content-search">
-                            <input type="text" class="input-search" placeholder="Digite aqui a sua busca...">
-                            <!-- <button class="btn btn-search">
-                                <i class="fa fa-search" aria-hidden="true"></i>
-                            </button> -->
-                        </div>
-
-                    </div>
-                </div>
-
             </div>
         </section>
 
@@ -256,33 +244,8 @@
                                     <th class="text-center">#</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center" scope="row">25/03/2013</td>
-                                    <td class="text-left">Av. Rui Barbosa x R. Amélia</td>
-                                    <td class="text-center">1431</td>
-                                    <td class="text-right" class="text-right">
-                                        JSON / CSV
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="" class="see-details" title="Ver Mais" alt="Ver Mais">
-                                            <i class="fa fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center" scope="row">25/03/2013</td>
-                                    <td class="text-left">Av. Rui Barbosa x R. Amélia</td>
-                                    <td class="text-center">1431</td>
-                                    <td class="text-right" class="text-right">
-                                        JSON / CSV
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="" class="see-details" title="Ver Mais" alt="Ver Mais">
-                                            <i class="fa fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                            <tbody id="table-body">
+                                
                             </tbody>
                         </table>
                     </div>
